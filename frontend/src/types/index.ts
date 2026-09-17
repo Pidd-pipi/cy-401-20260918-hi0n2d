@@ -66,6 +66,22 @@ export interface Contract {
   requirement?: Requirement;
 }
 
+export interface ContractDelivery {
+  id: number;
+  contractId: number;
+  revision: number;
+  description: string;
+  attachments: string[];
+  status: string; // submitted / rejected / accepted
+  rejectReason?: string;
+  submittedById: number;
+  reviewedById?: number;
+  submittedAt: string;
+  reviewedAt?: string;
+  submitter?: User;
+  reviewer?: User;
+}
+
 export interface PageResult<T> {
   items: T[];
   total: number;

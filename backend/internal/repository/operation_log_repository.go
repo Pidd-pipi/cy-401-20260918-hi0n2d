@@ -18,6 +18,12 @@ func NewOperationLogRepository(db *gorm.DB) *OperationLogRepository {
 	return &OperationLogRepository{db: db}
 }
 
+// WithTx returns a repository bound to an existing transaction handle, so the
+// audit entry commits and rolls back together with the business change.
+func (r *OperationLogRepository) WithTx(tx *gorm.DB) *OperationLogRepository {
+	return &OperationLogRepository{db: tx}
+}
+
 // Create inserts an operation log.
 func (r *OperationLogRepository) Create(l *model.OperationLog) error {
 	if err := r.db.Create(l).Error; err != nil {

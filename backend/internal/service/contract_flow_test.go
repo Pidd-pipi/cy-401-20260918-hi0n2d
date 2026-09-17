@@ -20,7 +20,7 @@ func newFlowTestDB(t *testing.T) *gorm.DB {
 	if err != nil {
 		t.Fatalf("open sqlite: %v", err)
 	}
-	if err := db.AutoMigrate(&model.User{}, &model.Requirement{}, &model.Bid{}, &model.Contract{}, &model.OperationLog{}); err != nil {
+	if err := db.AutoMigrate(&model.User{}, &model.Requirement{}, &model.Bid{}, &model.Contract{}, &model.ContractDelivery{}, &model.OperationLog{}); err != nil {
 		t.Fatalf("migrate: %v", err)
 	}
 	return db

@@ -81,26 +81,3 @@ func (s *ContractService) Sign(id uint, userID uint, userName string) (*model.Co
 	s.logs.Record(userID, userName, "contract.sign", "contract", c.ID, "签署确认合同")
 	return c, nil
 }
-
-// Complete confirms completion (requester side).
-func (s *ContractService) Complete(id uint, userID uint, userName string) (*model.Contract, error) {
-	c, err := s.contracts.FindByID(id)
-	if err != nil {
-		return nil, err
-	}
-	if c.PartyAID != userID {
-		return nil, constants.ErrForbidden
-	}
-	if c.Status != constants.ContractInProgress && c.Status != constants.ContractPendingReview {
-		return nil, constants.NewAppError(constants.CodeConflict, "合同当前不可完成确认")
-	}
-	c.Status = constants.ContractCompleted
-	for i := range c.Stages {
-		c.Stages[i].Status = "done"
-	}
-	if err := s.contracts.Update(c); err != nil {
-		return nil, fmt.Errorf("complete contract: %w", err)
-	}
-	s.logs.Record(userID, userName, "contract.complete", "contract", c.ID, "确认合同完成")
-	return c, nil
-}

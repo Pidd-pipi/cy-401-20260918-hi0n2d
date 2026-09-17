@@ -60,18 +60,3 @@ func (h *ContractHandler) Sign(c *gin.Context) {
 	}
 	util.OK(c, contract)
 }
-
-// Complete handles POST /contracts/:id/complete.
-func (h *ContractHandler) Complete(c *gin.Context) {
-	id, ok := parseUintParam(c, "id")
-	if !ok {
-		return
-	}
-	u := middleware.GetCurrentUser(c)
-	contract, err := h.svc.Complete(id, u.ID, u.Name)
-	if err != nil {
-		util.Fail(c, err)
-		return
-	}
-	util.OK(c, contract)
-}

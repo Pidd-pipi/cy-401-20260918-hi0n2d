@@ -7,14 +7,23 @@ import { computed } from 'vue';
 import {
   RequirementStatusLabel,
   BidStatusLabel,
-  ContractStatusLabel
+  ContractStatusLabel,
+  DeliveryStatusLabel
 } from '../../types/enums';
 
-const props = defineProps<{ status: string; kind?: 'requirement' | 'bid' | 'contract' }>();
+const props = defineProps<{ status: string; kind?: 'requirement' | 'bid' | 'contract' | 'delivery' }>();
 
 const label = computed(() => {
-  const map = props.kind === 'bid' ? BidStatusLabel : props.kind === 'contract' ? ContractStatusLabel : RequirementStatusLabel;
-  return map[props.status] || props.status;
+  switch (props.kind) {
+    case 'bid':
+      return BidStatusLabel[props.status] || props.status;
+    case 'contract':
+      return ContractStatusLabel[props.status] || props.status;
+    case 'delivery':
+      return DeliveryStatusLabel[props.status] || props.status;
+    default:
+      return RequirementStatusLabel[props.status] || props.status;
+  }
 });
 
 const tagType = computed(() => {
@@ -24,6 +33,7 @@ const tagType = computed(() => {
     case 'pending_signature':
     case 'pending_review':
     case 'bidding':
+    case 'submitted':
       return 'warning';
     case 'in_progress':
     case 'accepted':

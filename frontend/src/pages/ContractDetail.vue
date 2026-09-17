@@ -16,7 +16,6 @@
       </div>
       <div class="actions">
         <el-button v-if="contract.status === 'pending_signature'" type="primary" @click="sign">签署确认</el-button>
-        <el-button v-if="contract.status === 'in_progress' && isPartyA" type="success" @click="complete">确认完成</el-button>
       </div>
     </el-card>
 
@@ -24,6 +23,16 @@
       <template #header><b>阶段进度</b></template>
       <ProgressSteps :stages="contract.stages" />
     </el-card>
+
+    <DeliveryPanel
+      v-if="contract"
+      :contract-id="contract.id"
+      :contract-status="contract.status"
+      :delivery="delivery"
+      :is-party-a="isPartyA"
+      :is-party-b="isPartyB"
+      @changed="load"
+    />
   </div>
 </template>
 
@@ -31,37 +40,34 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import type { Contract } from '../types';
+import type { Contract, ContractDelivery } from '../types';
 import { useContractStore } from '../stores/contract';
 import { useUserStore } from '../stores/user';
 import { contractApi } from '../api/contract';
 import StatusBadge from '../components/common/StatusBadge.vue';
 import ProgressSteps from '../components/common/ProgressSteps.vue';
+import DeliveryPanel from '../components/common/DeliveryPanel.vue';
 import { formatCurrency } from '../utils/formatCurrency';
 
 const route = useRoute();
 const store = useContractStore();
 const userStore = useUserStore();
 const contract = ref<Contract | null>(null);
+const delivery = ref<ContractDelivery | null>(null);
 
 const isPartyA = computed(() => contract.value?.partyAId === userStore.user?.id);
+const isPartyB = computed(() => contract.value?.partyBId === userStore.user?.id);
 
 async function load() {
   const id = Number(route.params.id);
   contract.value = await store.fetchDetail(id);
+  delivery.value = await store.fetchLatestDelivery(id);
 }
 
 async function sign() {
   if (!contract.value) return;
   await contractApi.sign(contract.value.id);
   ElMessage.success('签署成功');
-  void load();
-}
-
-async function complete() {
-  if (!contract.value) return;
-  await contractApi.complete(contract.value.id);
-  ElMessage.success('已确认完成');
   void load();
 }
 
@@ -73,5 +79,5 @@ onMounted(() => void load());
 .c-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .c-parties { display: flex; gap: 24px; margin: 12px 0; }
 .actions { margin-top: 16px; }
-.stages-card { margin-bottom: 24px; }
+.stages-card { margin-bottom: 16px; }
 </style>

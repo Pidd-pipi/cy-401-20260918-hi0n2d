@@ -34,6 +34,13 @@ export enum UserRole {
   Admin = 'admin'
 }
 
+// 合同交付状态（与后端 backend/internal/constants/delivery_status.go 对齐）
+export enum DeliveryStatus {
+  Submitted = 'submitted',
+  Rejected = 'rejected',
+  Accepted = 'accepted'
+}
+
 export const RequirementStatusLabel: Record<string, string> = {
   draft: '草稿',
   open: '待报价',
@@ -64,4 +71,10 @@ export const RoleLabel: Record<string, string> = {
   freelancer: '自由职业者',
   both: '双角色',
   admin: '管理员'
+};
+
+export const DeliveryStatusLabel: Record<string, string> = {
+  submitted: '待验收',
+  rejected: '已驳回',
+  accepted: '已接受'
 };
