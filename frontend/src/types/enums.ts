@@ -26,6 +26,13 @@ export enum ContractStatus {
   Terminated = 'terminated'
 }
 
+// 交付状态（与后端 backend/internal/constants/delivery_status.go 对齐）
+export enum DeliveryStatus {
+  Submitted = 'submitted',
+  Rejected = 'rejected',
+  Accepted = 'accepted'
+}
+
 // 用户角色（与后端 backend/internal/constants/roles.go 对齐）
 export enum UserRole {
   Requester = 'requester',
@@ -57,6 +64,12 @@ export const ContractStatusLabel: Record<string, string> = {
   pending_review: '待验收',
   completed: '已完成',
   terminated: '已终止'
+};
+
+export const DeliveryStatusLabel: Record<string, string> = {
+  submitted: '待验收',
+  rejected: '已驳回',
+  accepted: '已接受'
 };
 
 export const RoleLabel: Record<string, string> = {

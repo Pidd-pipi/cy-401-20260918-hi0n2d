@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 	"testing"
@@ -16,11 +17,32 @@ import (
 
 func newFlowTestDB(t *testing.T) *gorm.DB {
 	t.Helper()
-	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
+	tmp, err := os.CreateTemp("", "gigmatch-test-*.db")
+	if err != nil {
+		t.Fatalf("create temp db: %v", err)
+	}
+	dbPath := tmp.Name()
+	if err := tmp.Close(); err != nil {
+		t.Fatalf("close temp db: %v", err)
+	}
+	t.Cleanup(func() {
+		os.Remove(dbPath)
+		os.Remove(dbPath + "-wal")
+		os.Remove(dbPath + "-shm")
+	})
+	dsn := fmt.Sprintf("file:%s?_busy_timeout=5000", dbPath)
+	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("open sqlite: %v", err)
 	}
-	if err := db.AutoMigrate(&model.User{}, &model.Requirement{}, &model.Bid{}, &model.Contract{}, &model.OperationLog{}); err != nil {
+	// WAL allows readers and a writer to run concurrently so the conditional
+	// UPDATE guards (not table-lock errors) decide the winning request.
+	for _, pragma := range []string{"PRAGMA journal_mode=WAL", "PRAGMA busy_timeout=5000"} {
+		if err := db.Exec(pragma).Error; err != nil {
+			t.Fatalf("exec %s: %v", pragma, err)
+		}
+	}
+	if err := db.AutoMigrate(&model.User{}, &model.Requirement{}, &model.Bid{}, &model.Contract{}, &model.ContractDelivery{}, &model.OperationLog{}); err != nil {
 		t.Fatalf("migrate: %v", err)
 	}
 	return db
@@ -34,6 +56,7 @@ func TestAcceptBidCreatesContract(t *testing.T) {
 	reqRepo := repository.NewRequirementRepository(db)
 	bidRepo := repository.NewBidRepository(db)
 	contractRepo := repository.NewContractRepository(db)
+	deliveryRepo := repository.NewContractDeliveryRepository(db)
 	logRepo := repository.NewOperationLogRepository(db)
 
 	requester := &model.User{Username: "req1", PasswordHash: "x", Name: "需求方", Role: constants.RoleRequester}
@@ -46,7 +69,7 @@ func TestAcceptBidCreatesContract(t *testing.T) {
 	}
 
 	logSvc := NewOperationLogService(logRepo, logger)
-	contractSvc := NewContractService(contractRepo, logSvc, logger)
+	contractSvc := NewContractService(contractRepo, deliveryRepo, logSvc, logger)
 	reqSvc := NewRequirementService(reqRepo, bidRepo, logSvc, logger)
 	bidSvc := NewBidService(bidRepo, reqRepo, logSvc, logger)
 

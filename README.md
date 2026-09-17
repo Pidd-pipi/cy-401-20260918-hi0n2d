@@ -25,7 +25,7 @@ docker compose up -d --build
 - 需求大厅：瀑布流列表 + 预算/技能/状态多维筛选
 - 需求详情：完整信息 + 报价列表（需求方视角）+ 报价提交表单（自由职业者视角）
 - 我的工作台：分角色展示已发布需求、已报价项目、进行中合同
-- 合同详情：条款、阶段进度（分阶段付款进度条）、双方信息
+- 合同详情：条款、阶段进度（分阶段付款进度条）、双方信息、交付验收闭环（乙方提交交付说明与附件，甲方驳回需填原因或接受完成）
 - 个人资料：展示/编辑个人信息、技能标签、历史项目
 - 横切：JWT 认证授权、操作日志、路由守卫、请求拦截器自动带 token
 
@@ -107,6 +107,7 @@ npm run dev
 | RequirementStatus（draft/open/bidding/in_progress/pending_review/completed/cancelled） | `backend/internal/constants/requirement_status.go` | `frontend/src/types/enums.ts` | Requirements、RequirementDetail、Dashboard |
 | BidStatus（pending/accepted/rejected/withdrawn） | `backend/internal/constants/bid_status.go` | `frontend/src/types/enums.ts` | RequirementDetail、Dashboard |
 | ContractStatus（pending_signature/in_progress/pending_review/completed/terminated） | `backend/internal/constants/contract_status.go` | `frontend/src/types/enums.ts` | ContractDetail、Dashboard |
+| DeliveryStatus（submitted/rejected/accepted） | `backend/internal/constants/delivery_status.go` | `frontend/src/types/enums.ts` | ContractDetail |
 | UserRole（requester/freelancer/both/admin） | `backend/internal/constants/roles.go` | `frontend/src/types/enums.ts` | Layout、RequirementDetail、Dashboard |
 
 ## 主要 API 列表
@@ -124,7 +125,9 @@ npm run dev
 | POST | /api/v1/bids/:id/withdraw | 撤回报价 |
 | GET | /api/v1/contracts | 我的合同 |
 | GET | /api/v1/contracts/:id | 合同详情 |
-| POST | /api/v1/contracts/:id/sign · /complete | 签署/完成 |
+| POST | /api/v1/contracts/:id/sign · /complete | 签署/完成确认 |
+| POST | /api/v1/contracts/:id/deliveries | 乙方提交交付（说明+附件），合同转待验收 |
+| POST | /api/v1/contracts/:id/deliveries/:deliveryId/reject · /accept | 甲方驳回（原因必填）/接受交付 |
 | GET | /api/v1/dashboard | 我的工作台 |
 | GET/PATCH | /api/v1/users/:id | 个人资料 |
 | GET | /api/v1/operation-logs | 操作日志 |

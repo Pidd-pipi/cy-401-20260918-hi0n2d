@@ -86,6 +86,9 @@ func New(cfg *config.Config, logger *slog.Logger, h *Handlers, users *repository
 		protected.GET("/contracts/:id", h.Contract.Get)
 		protected.POST("/contracts/:id/sign", h.Contract.Sign)
 		protected.POST("/contracts/:id/complete", h.Contract.Complete)
+		protected.POST("/contracts/:id/deliveries", h.Contract.SubmitDelivery)
+		protected.POST("/contracts/:id/deliveries/:deliveryId/reject", h.Contract.RejectDelivery)
+		protected.POST("/contracts/:id/deliveries/:deliveryId/accept", h.Contract.AcceptDelivery)
 		protected.GET("/dashboard", h.Dashboard.Get)
 		protected.GET("/operation-logs", h.OperationLog.List)
 	}

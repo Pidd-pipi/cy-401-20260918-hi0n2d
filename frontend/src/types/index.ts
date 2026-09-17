@@ -50,6 +50,19 @@ export interface ContractStage {
   dueAt: string;
 }
 
+export interface ContractDelivery {
+  id: number;
+  contractId: number;
+  submitterId: number;
+  description: string;
+  attachments: string[];
+  status: string; // submitted / rejected / accepted
+  rejectReason?: string;
+  reviewerId?: number;
+  reviewedAt?: string;
+  createdAt?: string;
+}
+
 export interface Contract {
   id: number;
   contractNo: string;
@@ -64,6 +77,12 @@ export interface Contract {
   partyA?: User;
   partyB?: User;
   requirement?: Requirement;
+  latestDelivery?: ContractDelivery | null;
+}
+
+export interface SubmitDeliveryPayload {
+  description: string;
+  attachments: string[];
 }
 
 export interface PageResult<T> {

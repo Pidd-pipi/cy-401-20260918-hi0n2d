@@ -44,7 +44,10 @@
       <tr><td><span class="m GET">GET</span></td><td><code>/api/v1/contracts</code></td><td>我的合同</td></tr>
       <tr><td><span class="m GET">GET</span></td><td><code>/api/v1/contracts/:id</code></td><td>合同详情（含阶段）</td></tr>
       <tr><td><span class="m POST">POST</span></td><td><code>/api/v1/contracts/:id/sign</code></td><td>签署确认</td></tr>
-      <tr><td><span class="m POST">POST</span></td><td><code>/api/v1/contracts/:id/complete</code></td><td>完成确认</td></tr>
+      <tr><td><span class="m POST">POST</span></td><td><code>/api/v1/contracts/:id/complete</code></td><td>完成确认（执行中）</td></tr>
+      <tr><td><span class="m POST">POST</span></td><td><code>/api/v1/contracts/:id/deliveries</code></td><td>乙方提交交付（说明+附件），合同转待验收</td></tr>
+      <tr><td><span class="m POST">POST</span></td><td><code>/api/v1/contracts/:id/deliveries/:deliveryId/reject</code></td><td>甲方驳回（原因必填），合同回执行中</td></tr>
+      <tr><td><span class="m POST">POST</span></td><td><code>/api/v1/contracts/:id/deliveries/:deliveryId/accept</code></td><td>甲方接受交付，合同完成</td></tr>
     </table></div>
     <div class="card"><h2>其它</h2><table>
       <tr><td><span class="m GET">GET</span></td><td><code>/api/v1/dashboard</code></td><td>我的工作台</td></tr>

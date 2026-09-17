@@ -16,6 +16,9 @@
     "/api/v1/contracts/{id}": { "get": {} },
     "/api/v1/contracts/{id}/sign": { "post": {} },
     "/api/v1/contracts/{id}/complete": { "post": {} },
+    "/api/v1/contracts/{id}/deliveries": { "post": {} },
+    "/api/v1/contracts/{id}/deliveries/{deliveryId}/reject": { "post": {} },
+    "/api/v1/contracts/{id}/deliveries/{deliveryId}/accept": { "post": {} },
     "/api/v1/dashboard": { "get": {} },
     "/api/v1/operation-logs": { "get": {} },
     "/healthz": { "get": {} }
